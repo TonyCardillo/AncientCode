@@ -1,0 +1,129 @@
+REMSTART
+
+PiNet is the name for the software system that
+finds the location of other programs within the infinite
+number pi and stores those locations on a server database.
+
+The server's functionality involves storing these numbers
+and establishing connections to the client.
+
+The client's functionality involves calculating n-th digits
+of pi and searching pi for these programs.
+
+Currently reports "f" instead of "e" at n=560, throwing all others off
+.978942
+
+REMEND
+
+` Text commands
+set text opaque
+
+` Variable initialization
+digit# as double float = 0.0
+result# as double float = 0.0
+partial# as double float = 0.0
+numer# as double float = 0.0
+r# as double float = 0.0
+
+s1# as double float = 0.0
+s2# as double float = 0.0
+s3# as double float = 0.0
+s4# as double float = 0.0
+
+do
+    input "Nth digit:  ",n
+    dec n
+    ` Calculate the nth digit
+    s1# = BBP_Sum(n,1) : print str$(4*s1#)+" minus"
+    s2# = BBP_Sum(n,4) : print str$(2*s2#)+" minus"
+    s3# = BBP_Sum(n,5) : print str$(s3#)+" minus"
+    s4# = BBP_Sum(n,6) : print str$(s4#)+" equals"
+    digit# = 4.0*s1#-2.0*s2#-s3#-s4#
+    print str$(digit#)+" and lowers to"
+    removeInt = floor(digit#)
+    digit# = (digit#-removeInt)
+    print str$(digit#)+" * 16 = "
+    digit# = digit#*16.0
+    
+    ` Substitute letters for higher numbers
+    if digit#>10 
+        if digit#>11 
+            if digit#>12 
+                if digit#>13 
+                    if digit#>14
+                        if digit#>15
+                            print "f"
+                        else
+                            print "e"
+                        endif
+                    else
+                        print "d"
+                    endif
+                else
+                    print "c"
+                endif
+            else
+                print "b"
+            endif
+        else
+            print "a"
+        endif
+    else
+        print left$(str$(digit#),1)
+    endif
+
+loop    
+
+wait key
+end
+    
+    
+` Function to find the n-th digit of pi (BBP formula)
+function BBP_Sum(place, j)
+    result# = 0.0
+    partial# = 0.0
+    numer# = 0.0
+    r# = 0.0
+    
+    ` First sum
+    for k = 0 to place
+        r# = 8.0*k + j
+        numer# = mod_exp(16.0, place-k, r#)
+        partial# = partial# + (numer#/r#)        
+    next k
+    
+        result# = partial#
+
+    ` Second sum
+    partial# = 0
+    newpartial# = 0
+    k = place
+    repeat    
+        partial# = newpartial#  
+        inc k
+        r# = 8.0*k + j
+        newpartial# = partial# + (16.0^(place-k) / r#)  
+    until newpartial# = partial#
+           
+    result# = result# + newpartial# 
+    
+    if result# > 1
+        removeInt = floor(result#)
+        result# = result# - removeInt
+    endif
+
+           
+endfunction result#
+  
+   
+` Uses modular exponentiation to reduce 16^n for large n.
+function mod_exp(base#, exponent, mod#)
+    partial# = 1.0
+    while exponent > 0
+        if exponent mod 2 = 1
+            partial# = (partial#*base#) mod mod#
+        endif
+        exponent = exponent >> 1
+        base# = (base#*base#) mod mod#     
+    endwhile
+endfunction partial#
