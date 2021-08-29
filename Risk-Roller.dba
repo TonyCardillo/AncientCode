@@ -1,0 +1,130 @@
+` Risk Strategy
+set text opaque
+dim dice(3)
+
+do
+    
+cls
+a1 = 0
+a2 = 0
+
+if lower$(reroll$) = "yes"
+    attackNumStart = attackNum
+    defenseNumStart = defenseNum
+    goto askRolls
+endif    
+
+set cursor 0,0
+input "Number of Attackers?  ",attackNumStart
+set cursor 0,20
+input "Number of Defenders?  ",defenseNumStart
+
+attackNum = attackNumStart
+defenseNum = defenseNumStart
+
+askRolls:
+set cursor 0,40
+input "How many rolls?  ",rolls
+
+
+
+text 0,60,"Given "+str$(attackNumStart)+" attackers, "+str$(defenseNumStart)+" defenders, and "+str$(rolls)+" rolls..." 
+
+    repeat
+        randomize timer()
+        ` Reset
+        a1 = 0
+        a2 = 0
+        d1 = 0
+        d2 = 0
+        
+        if attackNum >= 4    
+            
+            dice(1) = rnd(5)+1
+            dice(2) = rnd(5)+1
+            dice(3) = rnd(5)+1
+            
+                                  
+         
+            
+        else
+            if attackNum >= 3   
+                dice(1) = rnd(5)+1
+                dice(2) = rnd(5)+1
+                dice(3) = 0
+            else
+                dice(1) = rnd(5)+1
+                dice(2) = 0
+                dice(3) = 0
+            endif
+        endif            
+            
+        for y = 1 to 3
+            if dice(y) > a1
+                a2 = a1
+                a1 = dice(y)
+            else
+                if dice(y) > a2
+                    a2 = dice(y)
+                endif
+            endif
+       next y      
+            
+            
+            
+        if defenseNum >= 2 and attackNum >= 3
+            dice(1) = rnd(5)+1
+            dice(2) = rnd(5)+1
+            dice(3) = 0
+            
+            
+        else
+            dice(1) = rnd(5)+1
+            dice(2) = 0
+        endif
+        
+        if dice(1) >= dice(2)
+            d1 = dice(1)
+            d2 = dice(2)
+        else
+            d1 = dice(2)
+            d2 = dice(1)
+        endif   
+        
+                
+        if d1 >= a1
+                attackNum = attackNum - 1
+                `text 0,100,"Defender wins.    "
+                `text 0,120,"                      "
+            else
+                defenseNum = defenseNum - 1    
+                `text 0,100,"Attacker wins.    "
+                `text 0,120,"                      "
+        endif
+
+        if defenseNum >= 2 and attackNum >= 3  
+            if d2 >= a2
+                attackNum = attackNum - 1
+                `text 0,120,"Defender wins.    "
+            else
+                defenseNum = defenseNum - 1  
+                `text 0,120,"Attacker wins.    "  
+            endif
+        endif        
+        dec rolls 
+        
+        if attackNum = 1 or defenseNum = 0
+            rolls=0
+        endif    
+                 
+    until rolls = 0 
+    
+    text 0,80,"Attacker now has "+str$(attackNum)+" pieces. ("+str$(attackNum - attackNumStart)+" pieces)"
+    text 0,100,"Defender now has "+str$(defenseNum)+" pieces. ("+str$(defenseNum - defenseNumStart)+" pieces)"
+    set cursor 0,120
+    input "Reroll? ",reroll$
+    
+loop  
+
+            
+end   
